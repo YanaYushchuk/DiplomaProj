@@ -1,14 +1,20 @@
-    // 1. Create global userWalletAddress variable
-window.userWalletAddress = null;
+const g = typeof globalThis === "object"
+    ? globalThis
+    : typeof window === "object"
+        ? window
+        : typeof global === "object"
+            ? global
+            : null; // Causes an error on the next line
+g.userWalletAddress = null;
 
-// 2. when the browser is ready
-window.onload = async (event) => {
 
+const modalLoad = async () =>{
   // 2.1 check if ethereum extension is installed
-  if (window.ethereum) {
+  
+  if (g.ethereum) {
 
     // 3. create web3 instance
-    window.web3 = new Web3(window.ethereum);
+    g.web3 = new Web3(g.ethereum);
 
   } else {
 
@@ -17,19 +23,19 @@ window.onload = async (event) => {
   }
 
   // 5. check if user is already logged in and update the global userWalletAddress variable
-  window.userWalletAddress = window.localStorage.getItem("userWalletAddress");
+  g.userWalletAddress = g.localStorage.getItem("userWalletAddress");
 
   // 6. show the user dashboard
-  showUserDashboard();
+  refreshLoggedIn();
 };
 
 // 1. Web3 login function
 const loginWithEth = async () => {
-    // 1.1 check if there is global window.web3 instance
-    if (window.web3) {
+    // 1.1 check if there is global g.web3 instance
+    if (g.web3) {
       try {
         // 2. get the user's ethereum account - prompts metamask to login
-        const selectedAccount = await window.ethereum
+        const selectedAccount = await g.ethereum
           .request({
             method: "eth_requestAccounts",
           })
@@ -40,13 +46,13 @@ const loginWithEth = async () => {
           });
   
         // 3. set the global userWalletAddress variable to selected account
-        window.userWalletAddress = selectedAccount;
+        g.userWalletAddress = selectedAccount;
   
         // 4. store the user's wallet address in local storage
-        window.localStorage.setItem("userWalletAddress", selectedAccount);
+        g.localStorage.setItem("userWalletAddress", selectedAccount);
   
         // 5. show the user dashboard
-        showUserDashboard();
+        refreshLoggedIn();
   
       } catch (error) {
         alert(error);
@@ -55,78 +61,34 @@ const loginWithEth = async () => {
       alert("wallet not found");
     }
   };
-  
-  // 6. when the user clicks the login button run the loginWithEth function
-  document.querySelector(".login-btn").addEventListener("click", loginWithEth);
+
 
   // function to show the user dashboard
-const showUserDashboard = async () => {
-
+const refreshLoggedIn = async () => {
+    $("#loginModal").modal("toggle");
     // if the user is not logged in - userWalletAddress is null
-    if (!window.userWalletAddress) {
-  
-      // change the page title
-      document.title = "Web3 Login";
-  
-      // show the login section
-      document.querySelector(".login-section").style.display = "flex";
-  
-      // hide the user dashboard section
-      document.querySelector(".dashboard-section").style.display = "none";
-  
+    if (!g.userWalletAddress) {
+      
+      logout();
       // return from the function
       return false;
     }
-  
-    // change the page title
-    document.title = "Web3 Dashboard 🤝";
-  
-    // hide the login section
-    document.querySelector(".login-section").style.display = "none";
-  
-    // show the dashboard section
-    document.querySelector(".dashboard-section").style.display = "flex";
-  
-    // show the user's wallet address
-     showUserWalletAddress();
-  
-    // get the user's wallet balance
-     getWalletBalance();
-  };
-
-  const showUserWalletAddress = () => {
-    const walletAddressEl = document.querySelector(".wallet-address");
-    walletAddressEl.innerHTML = window.userWalletAddress;
-  };
-
-  // get the user's wallet balance
-const getWalletBalance = async () => {
-    // check if there is global userWalletAddress variable
-    if (!window.userWalletAddress) {
-      return false;
-    }
-  
-    // get the user's wallet balance
-    const balance = await window.web3.eth.getBalance(window.userWalletAddress);
-  
-    // convert the balance to ether
-    document.querySelector(".wallet-balance").innerHTML = web3.utils.fromWei(
-      balance,
-      "ether"
-    );
+    document.getElementById("login-btn").addEventListener("click", logout);
+    document.getElementById("login-btn").textContent = "Log Out"
   };
 
   // web3 logout function
 const logout = () => {
     // set the global userWalletAddress variable to null
-    window.userWalletAddress = null;
+    g.userWalletAddress = null;
   
     // remove the user's wallet address from local storage
-    window.localStorage.removeItem("userWalletAddress");
+    g.localStorage.removeItem("userWalletAddress");
   
-    // show the user dashboard
-    showUserDashboard();
+    document.getElementById("login-btn").addEventListener("click", modalLoad);
+    document.getElementById("login-btn").textContent = "Log In"    
   };
   
-  // when the user clicks the logout button run the logout function
-  document.querySelector(".logout-btn").addEventListener("click", logout);
+  
+document.getElementById("login-btn").addEventListener("click", modalLoad);
+document.querySelector(".login-btn").addEventListener("click", loginWithEth);
