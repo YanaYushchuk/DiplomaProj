@@ -1,5 +1,9 @@
-const express = require('express'); //Import the express dependency
-const app = express();              //Instantiate an express app, the main work horse of this server
+const express = require('express');
+const axios = require('axios');
+const crypto = require('crypto');
+//Import the express dependency
+const app = express();       
+       //Instantiate an express app, the main work horse of this server
 const port = 8080;                  //Save the port number where your server will be listening
 
 //Idiomatic expression in express to route and respond to a client request
