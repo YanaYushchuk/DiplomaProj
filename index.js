@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const crypto = require('crypto');
+const path = require('path');
 //Import the express dependency
 const app = express();       
        //Instantiate an express app, the main work horse of this server
@@ -9,9 +10,14 @@ const port = 8080;                  //Save the port number where your server wil
 app.use(express.static(__dirname));
 
 //Idiomatic expression in express to route and respond to a client request
-app.get('/', (req, res) => {        //get requests to the root ("/") will route here
-    res.end('index.html', {root: __dirname});      //server responds by sending the index.html file to the client's browser
-                                                        //the .sendFile method needs the absolute path to the file, see: https://expressjs.com/en/4x/api.html#res.sendFile 
+// Serve index.html at the root route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Serve trip.html at the /trip route
+app.get('/trip', (req, res) => {
+    res.sendFile(path.join(__dirname, 'src/trip.html'));
 });
 
 app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}

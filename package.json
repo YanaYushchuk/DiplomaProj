@@ -12,6 +12,8 @@
     "axios": "^1.6.8",
     "crypto": "^1.0.1",
     "express": "^4.19.2",
+    "express-async-handler": "^1.2.0",
+    "sqlite3": "^5.1.7",
     "web3": "^4.8.0"
   }
 }
