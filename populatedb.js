@@ -46,15 +46,13 @@ console.log(
     console.log(`Added destination: ${title} ${description}`);
   }
 
-  async function destinationSequenceCreate(index, previousDestination, destination, nextDestination, trips) {
-    const destinationSequencedetail = { destination: destination };  
-    if (previousDestination != false) destinationSequencedetail.previousDestination = previousDestination;
-    if (nextDestination != false) destinationSequencedetail.nextDestination = nextDestination;
-    if (trips != false) destinationSequencedetail.trips = trips;
+  async function destinationSequenceCreate(index, position, destination) {
+    console.log(position);
+    const destinationSequencedetail = { position: position, destination: destination };
     const destinationSequence = new DestinationSequence(destinationSequencedetail);  
     await destinationSequence.save();
     destinationSequences[index] = destinationSequence;
-    console.log(`Added destinationSequence: ${previousDestination} ${destination} ${nextDestination} ${trips}`);
+    console.log(`Added destinationSequence: ${position} ${destination}`);
   }
   
   async function tripCreate(index, title, description, price, destinationSequences) {
@@ -87,23 +85,25 @@ console.log(
   async function createDestinationSequences() {
     console.log("Adding destination sequences");
     await Promise.all([
-      destinationSequenceCreate(0, destinations[0], destinations[1], destinations[2]),
-      destinationSequenceCreate(1, destinations[1], destinations[3], false),
-      destinationSequenceCreate(2, false, destinations[1], false),
-      destinationSequenceCreate(3, destinations[2], destinations[3], false),
-      destinationSequenceCreate(4, false, destinations[3], destinations[2]),
-      destinationSequenceCreate(5, false, destinations[3], destinations[0]),
+      destinationSequenceCreate(0, 0, destinations[0]),
+      destinationSequenceCreate(1, 1, destinations[1]),
+      destinationSequenceCreate(2, 2, destinations[2]),
+      destinationSequenceCreate(3, 0, destinations[1]),
+      destinationSequenceCreate(4, 1, destinations[2]),
+      destinationSequenceCreate(5, 0, destinations[3]),
+      destinationSequenceCreate(6, 0, destinations[3]),
+      destinationSequenceCreate(7, 0, destinations[3]),
     ]);
   }
 
   async function createTrips() {
     console.log("Adding trips");
     await Promise.all([
-      tripCreate(0, "TestTrip1", "TestTripDesc1", 899.99, [destinationSequences[2]]),
-      tripCreate(1, "TestTrip2", "TestTripDesc2", 1, [destinationSequences[4], destinationSequences[3]]),
-      tripCreate(2, "TestTrip3", "TestTripDesc3", 9999.99, [destinationSequences[5], destinationSequences[0], destinationSequences[3]]),
-      tripCreate(3, "TestTrip4", "TestTripDesc4", 10.99, [destinationSequences[2]]),
-      tripCreate(4, "TestTrip5", "TestTripDesc5", 12, [destinationSequences[2]]),
+      tripCreate(0, "TestTrip1", "TestTripDesc1", 899.99, [destinationSequences[0], destinationSequences[1], destinationSequences[2]]),
+      tripCreate(1, "TestTrip2", "TestTripDesc2", 1, [destinationSequences[3], destinationSequences[4]]),
+      tripCreate(2, "TestTrip3", "TestTripDesc3", 9999.99, [destinationSequences[5]]),
+      tripCreate(3, "TestTrip4", "TestTripDesc4", 10.99, [destinationSequences[6]]),
+      tripCreate(4, "TestTrip5", "TestTripDesc5", 12, [destinationSequences[7]]),
     ]);
   }    
 

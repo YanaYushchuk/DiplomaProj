@@ -3,9 +3,8 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const DestinationSequenceSchema = new Schema({
-  previousDestination: { type: Schema.Types.ObjectId, ref: "Destination" },
-  destination: { type: Schema.Types.ObjectId, ref: "Destination", required: true },
-  nextDestination: { type: Schema.Types.ObjectId, ref: "Destination" }
+  position: { type: Number, required: true },
+  destination: { type: Schema.Types.ObjectId, ref: "Destination", required: true }
 });
 
 // Export model
